@@ -11,13 +11,13 @@
 
 stdenv.mkDerivation (finalAttrs: {
   pname = "logitune";
-  version = "0.2.3";
+  version = "0.3.4";
 
   src = fetchFromGitHub {
     owner = "mmaher88";
     repo = "logitune";
     tag = "v${finalAttrs.version}";
-    hash = "sha256-zyALn1mOdQoUPj5j045pvCQjffQB6Rl/+QyKziCqixw=";
+    hash = "sha256-eCRuSBC+f9IWGfraqkPQgwG0xxBbQIC2RadLlbEJIpQ=";
   };
 
   nativeBuildInputs = [
@@ -34,6 +34,11 @@ stdenv.mkDerivation (finalAttrs: {
     systemd
   ];
 
+  postPatch = ''
+    substituteInPlace CMakeLists.txt \
+      --replace-fail "/etc/xdg/autostart" "etc/xdg/autostart"
+  '';
+
   strictDeps = true;
   __structuredAttrs = true;
 
@@ -41,12 +46,13 @@ stdenv.mkDerivation (finalAttrs: {
     "-GNinja"
     "-DCMAKE_BUILD_TYPE=Release"
     "-DBUILD_TESTING=OFF"
+    "-DLOGITUNE_VERSION=${finalAttrs.version}"
   ];
 
   meta = {
     description = "Configure Logitech devices on Linux (Options+ clone)";
     homepage = "https://github.com/mmaher88/logitune";
-    license = lib.licenses.mit;
+    license = lib.licenses.gpl3Only;
     maintainers = [ lib.maintainers.garrettgr ];
     platforms = with lib.platforms; linux;
     mainProgram = "logitune";
